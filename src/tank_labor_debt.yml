@@ -1,0 +1,86 @@
+# The model is a marriage of "A Baseline DSGE Model" (Fernández-Villaverde and Rubio-Ramírez, manuscript),
+# "The Empirical Implications of the Interest-Rate Lower Bound" (Gust et al., 2012 FED DP), 
+# and "Shocks, Frictions, and Inequality in US Business Cycles (Bayer et al., 2024 AER)"
+# Author: Gregor Boehl [mail@gregorboehl.com], Albert Ahalian
+---
+
+name: 'nk_capital'
+description: 'A medium scale NK model with capital, labor income taxation and evolving debt'
+variables: [ y, y_prod, c, c_c, c_u, n, n_u, n_c, dd, div, bprof, pi, R, Rn, Rk, w, mc, MPK, k, i, g, b, qb, t, tau]
+parameters: [ theta, kappa, delta, alpha, psi_p, phi_pi, phi_y, rho, sigma_l, chi, elb, gamma, beta, rho_g, price_markup, gamma_y, gamma_b, rho_tau, psi_pi, psi_y, rho_b]
+shocks: [e_g]
+
+equations:
+    ## Unconstrained Households (c_u, n_u, dd)
+    ~ 1/c_u = beta*(1/c_uPrime)*R/piPrime # Euler Equation
+    ~ chi*n_u**sigma_l*c_u  = (1-tau)*w # labor Supply
+    ~ dd + c_u + t = (1-tau)*w*n_u + RLag/pi*ddLag + div + bprof # Constraint 
+
+    ## Constrained Households (c_c, n_c)
+    ~ c_c = (1-tau)*w*n_c # Constraint
+    ~ chi*n_c**sigma_l*c_c  = (1-tau)*w # labor Supply 
+
+    ## Banking Block (RK, qb, bprof)
+    ~ R = (1 + kappa*qbPrime)/qb # no arbitrage condition for the bond price
+    ~ R = RkPrime # no arbitrage condition for the return to capital (Rk is the return to capital as in BGG)
+    ~ bprof = ((1+kappa*qb)*bLag + Rk*kLag - RLag*(1-gamma)*ddLag)/pi # "bank' profits
+
+    ## Market Clearing Block (c, y, n, i)
+    ~ c + i + g = (1-psi_p/2*(pi/piSS - 1)**2/2)*y_prod # goods market clearing
+    ~ c + i + g = y # definition of "effective" output
+    ~ c = (1-gamma)*c_u + gamma*c_c
+    ~ n = (1-gamma)*n_u + gamma*n_c
+
+    ## Firms Block (pi, y_prod, k, MPK, MC, w, div)
+    ~ psi_p*(pi/piSS - 1)*pi/piSS = 1/(1-price_markup) + price_markup/(price_markup-1)*mc + psi_p*beta*c_u/c_uPrime*(piPrime/piSS - 1)*piPrime/piSS*y_prodPrime/y_prod # price Phillips curve ricardian households hold the firms
+    ~ y_prod = kLag**alpha*(n)**(1-alpha) # production function
+    ~ k = (1-delta)*kLag + i # law of motion for capital
+    ~ Rk/pi = MPK + (1-delta) # return to capital
+    ~ w = (1-alpha)*mc*y_prod/n # real marginal costs
+    ~ MPK = alpha*mc*y_prod/kLag # marginal product of capital
+    ~ div = (1 - mc - psi_p*(pi/piSS - 1)**2/2)*y_prod # dividents
+
+    ## Policy Block (t, b, Rn, R, g)
+    ~ g + (1+kappa*qb)/pi*bLag = qb*b + (1-gamma)*t + w*tau*n # government budget constraint
+    ~ b = (ySS/qbSS)**rho_b*(yLag/qbLag)**(1-rho_b)*(piLag/piSS)**psi_pi*(yLag/ySS)**psi_y # level of outstanding government bonds, i.e. level of government debt
+    ~ Rn = (RSS*((pi/piSS)**phi_pi)*((y/ySS)**phi_y))**(1-rho)*RnLag**rho # Taylor rule for the notional nominal interest rate with persistency
+    ~ R = max(elb, Rn) # (actual) nominal interest rate, subject to ELB
+    ~ g = (0.2*ySS)**(1-rho_g)*gLag**rho_g*exp(e_g) # level of government spending, output goes up, and then consumption is going down, crowding out of consumption
+    ~ tau = tauLag**rho_tau*(tauSS*(y/ySS)**gamma_y*(b/bSS)**gamma_b)**(1-rho_tau) # tax rule
+steady_state:
+    fixed_values:
+        # parameters:
+        sigma_l: 2 # inverse Frisch elasticity of labour supply
+        theta: 6 # elasticity of substitution
+        kappa: 0.975 # decay parameter for coupon payments of perpetual bonds
+        delta: 0.025 # depreciation rate
+        psi_p: 60 # parameter on the costs of price adjustment
+        alpha: 0.2 # capital income share
+        phi_pi: 1.5 # Taylor rule coefficient on inflation
+        phi_y: 0.1 # Taylor rule coefficient on output
+        rho: 0.8 # persistence in (notional) nominal interest rate
+        elb: 1 # position of ELB
+        beta: 0.995 # discount factor
+        gamma: 0.3 # rich hand to mouth does not exist in marxs world
+        rho_g: 0.9 # persistence of government spending shock
+        price_markup: theta/(theta-1) # price markup
+        gamma_y: 2.75 # tax rule coefficient on output gap
+        gamma_b: 1.35 # tax rule coefficient on debt 
+        rho_tau: 0.3 # persistence of taxes 
+        psi_pi: -1.1 # debt coefficient on output gap
+        psi_y: -0.85 # debt coefficient on inflation gap
+        rho_b: 0.3 # persistence of steady-state level of bonds 
+
+        # steady state
+        pi: 1.02^.25 # steady state inflation
+        R: pi/beta # steady state nominal interest rate
+        Rn: R # steady state notional nominal interest rate
+        Rk: R # steady state rental rate of capital
+        n: 0.33 # steady state labour hours
+        mc: (theta-1)/theta # steady state marginal costs
+        tau: 0.25 # steady state labor tax
+
+    
+    init_guesses:
+        chi: 1e+1 # parameter on the disutility of labour
+        MPK: alpha*mc/20 # marginal product of capital
