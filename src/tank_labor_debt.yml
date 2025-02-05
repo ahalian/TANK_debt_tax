@@ -70,7 +70,6 @@ steady_state:
         psi_pi: -1.1 # debt coefficient on output gap
         psi_y: -0.85 # debt coefficient on inflation gap
         rho_b: 0.3 # persistence of steady-state level of bonds 
-        chi: 1e+1 # parameter on the disutility of labour
 
         # steady state
         pi: 1.02^.25 # steady state inflation
@@ -83,4 +82,5 @@ steady_state:
 
     
     init_guesses:
+        chi: 1e+1 # parameter on the disutility of labour
         MPK: alpha*mc/20 # marginal product of capital

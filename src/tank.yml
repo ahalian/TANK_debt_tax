@@ -65,7 +65,6 @@ steady_state:
         rho_g: 0.9 # persistence of government spending shock
         price_markup: theta/(theta-1) # price markup
         tau: 0 # no labor tax 
-        chi: 1e+1 # parameter on the disutility of labour
 
         # steady state
         pi: 1.02^.25 # steady state inflation
@@ -76,4 +75,5 @@ steady_state:
         mc: (theta-1)/theta # steady state marginal costs
     
     init_guesses:
+        chi: 1e+1 # parameter on the disutility of labour
         MPK: alpha*mc/20 # marginal product of capital
