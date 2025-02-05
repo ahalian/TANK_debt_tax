@@ -67,6 +67,7 @@ steady_state:
         gamma_y: 2.75 # tax rule coefficient on output gap
         gamma_b: 1.35 # tax rule coefficient on debt
         rho_tau: 0.3 # persistence of taxes 
+        chi: 1e+1 # parameter on the disutility of labour
 
         # steady state
         pi: 1.02^.25 # steady state inflation
@@ -79,5 +80,4 @@ steady_state:
 
     
     init_guesses:
-        chi: 1e+1 # parameter on the disutility of labour
         MPK: alpha*mc/20 # marginal product of capital
