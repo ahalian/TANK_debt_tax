@@ -42,7 +42,7 @@ equations:
 
     ## Policy Block (t, b, Rn, R, g)
     ~ g + (1+kappa*qb)/pi*bLag = qb*b + (1-gamma)*t + w*tau*n # government budget constraint
-    ~ b = (ySS/qbSS)**rho_b*(yLag/qbLag)**(1-rho_b)*(piLag/piSS)**psi_pi*(yLag/ySS)**psi_y # level of outstanding government bonds, i.e. level of government debt
+    ~ b = (ySS/qbSS)**rho_b*(yLag/qbLag)**(1-rho_b)*(yLag/ySS)**psi_y # level of outstanding government bonds, i.e. level of government debt
     ~ Rn = (RSS*((pi/piSS)**phi_pi)*((y/ySS)**phi_y))**(1-rho)*RnLag**rho # Taylor rule for the notional nominal interest rate with persistency
     ~ R = max(elb, Rn) # (actual) nominal interest rate, subject to ELB
     ~ g = (0.2*ySS)**(1-rho_g)*gLag**rho_g*exp(e_g) # level of government spending, output goes up, and then consumption is going down, crowding out of consumption

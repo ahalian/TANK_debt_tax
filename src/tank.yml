@@ -8,7 +8,7 @@ name: 'nk_capital'
 description: 'A medium scale TANK model with capital'
 variables: [ y, y_prod, c, c_c, c_u, n, n_u, n_c, dd, div, bprof, pi, R, Rn, Rk, w, mc, MPK, k, i, g, b, qb, t, tau]
 parameters: [ theta, kappa, delta, alpha, psi_p, phi_pi, phi_y, rho, sigma_l, chi, elb, gamma, beta, rho_g, price_markup]
-shocks: [ e_g]
+shocks: [e_g]
 
 equations:
     ## Unconstrained Households (c_u, n_u, dd)
